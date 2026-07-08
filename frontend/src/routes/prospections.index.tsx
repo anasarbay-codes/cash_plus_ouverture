@@ -17,12 +17,20 @@ const filters: (ProspectionState | "all")[] = ["all", "new", "interested", "conf
 
 function ProspectionsList() {
   const prospections = useStore((s) => s.prospections);
+  const role = useStore((s) => s.role);
+  const currentUser = useStore((s) => s.currentUser);
   const [state, setState] = useState<ProspectionState | "all">("all");
   const [q, setQ] = useState("");
-  const rows = useMemo(() => prospections.filter((p) =>
+  const scoped = useMemo(
+    () => (role === "agent" && currentUser
+      ? prospections.filter((p) => p.assigned_agent === currentUser)
+      : prospections),
+    [prospections, role, currentUser],
+  );
+  const rows = useMemo(() => scoped.filter((p) =>
     (state === "all" || p.state === state) &&
     (q === "" || `${p.owner_name} ${p.phone} ${p.city ?? ""}`.toLowerCase().includes(q.toLowerCase())),
-  ), [prospections, state, q]);
+  ), [scoped, state, q]);
 
   return (
     <AppLayout title="Prospection" subtitle="Prospects contactés par les agents commerciaux">

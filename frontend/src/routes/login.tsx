@@ -19,8 +19,8 @@ export const Route = createFileRoute("/login")({
 });
 
 const DEMO_ACCOUNTS = [
-  { email: "agent@cashplus.ma", password: "demo", name: "Karim Bennani", role: "agent" as const },
-  { email: "validateur@cashplus.ma", password: "demo", name: "Salma Rahmani", role: "validateur" as const },
+  { email: "agent@cashplus.ma", password: "demo", name: "Karim B.", role: "agent" as const },
+  { email: "validateur@cashplus.ma", password: "demo", name: "Salma R.", role: "validateur" as const },
   { email: "manager@cashplus.ma", password: "demo", name: "Youssef El Amrani", role: "manager" as const },
 ];
 
