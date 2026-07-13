@@ -22,6 +22,7 @@ function ProspectionDetail() {
   const update = useStore((s) => s.updateProspection);
   const confirm = useStore((s) => s.confirmProspection);
   const [reason, setReason] = useState("");
+  const [showReject, setShowReject] = useState(false);
 
   if (!p) {
     return (
@@ -78,10 +79,17 @@ function ProspectionDetail() {
                 <Button className="w-full" onClick={() => { update(p.id, { state: "interested" }); toast.success("Marqué comme intéressé"); }}>
                   <ThumbsUp className="h-4 w-4 mr-2" /> Marquer intéressé
                 </Button>
-                <RejectBlock reason={reason} setReason={setReason} onReject={() => {
-                  update(p.id, { state: "not_interested", rejection_reason: reason || "Non précisé" });
-                  toast("Prospect marqué non intéressé");
-                }} />
+                <RejectBlock
+                  show={showReject}
+                  onToggle={() => setShowReject((v) => !v)}
+                  reason={reason}
+                  setReason={setReason}
+                  onReject={() => {
+                    update(p.id, { state: "not_interested", rejection_reason: reason || "Non précisé" });
+                    toast("Prospect marqué non intéressé");
+                    setShowReject(false);
+                  }}
+                />
               </>
             )}
             {canAct && p.state === "interested" && (
@@ -93,10 +101,17 @@ function ProspectionDetail() {
                 }}>
                   <CheckCircle2 className="h-4 w-4 mr-2" /> Confirmer
                 </Button>
-                <RejectBlock reason={reason} setReason={setReason} onReject={() => {
-                  update(p.id, { state: "not_interested", rejection_reason: reason || "Non précisé" });
-                  toast("Prospect marqué non intéressé");
-                }} />
+                <RejectBlock
+                  show={showReject}
+                  onToggle={() => setShowReject((v) => !v)}
+                  reason={reason}
+                  setReason={setReason}
+                  onReject={() => {
+                    update(p.id, { state: "not_interested", rejection_reason: reason || "Non précisé" });
+                    toast("Prospect marqué non intéressé");
+                    setShowReject(false);
+                  }}
+                />
               </>
             )}
             {p.state === "confirmed" && (
@@ -121,13 +136,37 @@ function Field({ label, value }: { label: string; value: string }) {
   );
 }
 
-function RejectBlock({ reason, setReason, onReject }: { reason: string; setReason: (s: string) => void; onReject: () => void }) {
+function RejectBlock({
+  show,
+  onToggle,
+  reason,
+  setReason,
+  onReject,
+}: {
+  show: boolean;
+  onToggle: () => void;
+  reason: string;
+  setReason: (s: string) => void;
+  onReject: () => void;
+}) {
   return (
     <div className="space-y-2 pt-2 border-t">
-      <Textarea placeholder="Motif de refus (optionnel)" value={reason} onChange={(e) => setReason(e.target.value)} />
-      <Button variant="outline" className="w-full" onClick={onReject}>
+      <Button variant="outline" className="w-full" onClick={onToggle}>
         <ThumbsDown className="h-4 w-4 mr-2" /> Marquer non intéressé
       </Button>
+      {show && (
+        <div className="space-y-2">
+          <Textarea
+            placeholder="Motif de refus (optionnel)"
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            autoFocus
+          />
+          <Button variant="destructive" className="w-full" onClick={onReject}>
+            <ThumbsDown className="h-4 w-4 mr-2" /> Confirmer le refus
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

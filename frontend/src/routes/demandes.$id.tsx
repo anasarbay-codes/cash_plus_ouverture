@@ -23,6 +23,7 @@ function DemandeDetail() {
   const update = useStore((s) => s.updateDemande);
   const validate = useStore((s) => s.validateDemande);
   const [reason, setReason] = useState("");
+  const [showReject, setShowReject] = useState(false);
 
   if (!d) {
     return (
@@ -132,13 +133,36 @@ function DemandeDetail() {
                   <Check className="h-4 w-4 mr-2" /> Valider
                 </Button>
                 <div className="pt-2 border-t space-y-2">
-                  <Textarea placeholder="Motif de refus" value={reason} onChange={(e) => setReason(e.target.value)} />
-                  <Button variant="outline" className="w-full" disabled={!canReject || !reason} onClick={() => {
-                    update(d.id, { state: "rejected", rejection_reason: reason });
-                    toast("Demande refusée");
-                  }}>
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    disabled={!canReject}
+                    onClick={() => setShowReject((v) => !v)}
+                  >
                     <X className="h-4 w-4 mr-2" /> Refuser
                   </Button>
+                  {showReject && (
+                    <div className="space-y-2">
+                      <Textarea
+                        placeholder="Motif de refus"
+                        value={reason}
+                        onChange={(e) => setReason(e.target.value)}
+                        autoFocus
+                      />
+                      <Button
+                        variant="destructive"
+                        className="w-full"
+                        disabled={!reason}
+                        onClick={() => {
+                          update(d.id, { state: "rejected", rejection_reason: reason });
+                          toast("Demande refusée");
+                          setShowReject(false);
+                        }}
+                      >
+                        <X className="h-4 w-4 mr-2" /> Confirmer le refus
+                      </Button>
+                    </div>
+                  )}
                 </div>
                 {!canValidate && <p className="text-xs text-muted-foreground">Seul un validateur peut valider.</p>}
               </>
