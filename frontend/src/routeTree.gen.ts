@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as Creation_prospectionRouteImport } from './routes/creation_prospection'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SuivisIndexRouteImport } from './routes/suivis.index'
 import { Route as ProspectionsIndexRouteImport } from './routes/prospections.index'
@@ -21,6 +22,11 @@ import { Route as DemandesIdRouteImport } from './routes/demandes.$id'
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Creation_prospectionRoute = Creation_prospectionRouteImport.update({
+  id: '/creation_prospection',
+  path: '/creation_prospection',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -61,6 +67,7 @@ const DemandesIdRoute = DemandesIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/creation_prospection': typeof Creation_prospectionRoute
   '/login': typeof LoginRoute
   '/demandes/$id': typeof DemandesIdRoute
   '/prospections/$id': typeof ProspectionsIdRoute
@@ -71,6 +78,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/creation_prospection': typeof Creation_prospectionRoute
   '/login': typeof LoginRoute
   '/demandes/$id': typeof DemandesIdRoute
   '/prospections/$id': typeof ProspectionsIdRoute
@@ -82,6 +90,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/creation_prospection': typeof Creation_prospectionRoute
   '/login': typeof LoginRoute
   '/demandes/$id': typeof DemandesIdRoute
   '/prospections/$id': typeof ProspectionsIdRoute
@@ -94,6 +103,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/creation_prospection'
     | '/login'
     | '/demandes/$id'
     | '/prospections/$id'
@@ -104,6 +114,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/creation_prospection'
     | '/login'
     | '/demandes/$id'
     | '/prospections/$id'
@@ -114,6 +125,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/creation_prospection'
     | '/login'
     | '/demandes/$id'
     | '/prospections/$id'
@@ -125,6 +137,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  Creation_prospectionRoute: typeof Creation_prospectionRoute
   LoginRoute: typeof LoginRoute
   DemandesIdRoute: typeof DemandesIdRoute
   ProspectionsIdRoute: typeof ProspectionsIdRoute
@@ -141,6 +154,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/creation_prospection': {
+      id: '/creation_prospection'
+      path: '/creation_prospection'
+      fullPath: '/creation_prospection'
+      preLoaderRoute: typeof Creation_prospectionRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -197,6 +217,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  Creation_prospectionRoute: Creation_prospectionRoute,
   LoginRoute: LoginRoute,
   DemandesIdRoute: DemandesIdRoute,
   ProspectionsIdRoute: ProspectionsIdRoute,

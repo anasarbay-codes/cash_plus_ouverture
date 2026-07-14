@@ -14,14 +14,21 @@ function Index() {
   const prospections = useStore((s) => s.prospections);
   const demandes = useStore((s) => s.demandes);
   const suivis = useStore((s) => s.suivis);
+  const role = useStore((s) => s.role);
+  const currentUser = useStore((s) => s.currentUser);
 
-  const stats = [
+  const displayedProspections = role === "agent" && currentUser 
+    ? prospections.filter((p) => p.assigned_agent === currentUser) 
+    : prospections;
+
+  const allStats = [
     {
       to: "/prospections",
       label: "Prospection",
       icon: Users,
-      total: prospections.length,
-      hint: `${prospections.filter((p) => p.state === "interested").length} intéressés`,
+      total: displayedProspections.length,
+      hint: `${displayedProspections.filter((p) => p.state === "interested").length} intéressés`,
+      roles: ["agent", "validateur", "manager"],
     },
     {
       to: "/demandes",
@@ -29,6 +36,7 @@ function Index() {
       icon: FileText,
       total: demandes.length,
       hint: `${demandes.filter((d) => d.state === "submitted").length} à valider`,
+      roles: ["validateur", "manager"],
     },
     {
       to: "/suivis",
@@ -36,6 +44,7 @@ function Index() {
       icon: Rocket,
       total: suivis.length,
       hint: `${suivis.filter((s) => s.state !== "live").length} en cours`,
+      roles: ["validateur", "manager"],
     },
     {
       to: "/suivis",
@@ -43,8 +52,11 @@ function Index() {
       icon: CheckCircle2,
       total: suivis.filter((s) => s.state === "live").length,
       hint: "démarrées",
+      roles: ["manager"],
     },
   ];
+
+  const stats = allStats.filter((s) => s.roles.includes(role));
 
   const pipeline = demandes.filter((d) => d.state === "submitted").slice(0, 5);
 
@@ -85,37 +97,39 @@ function Index() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-base">Demandes à valider</CardTitle>
-            <Link to="/demandes" className="text-sm text-primary inline-flex items-center gap-1 hover:underline">
-              Voir tout <ArrowRight className="h-3 w-3" />
-            </Link>
-          </CardHeader>
-          <CardContent>
-            {pipeline.length === 0 ? (
-              <p className="text-sm text-muted-foreground py-6 text-center">Aucune demande en attente de validation.</p>
-            ) : (
-              <ul className="divide-y">
-                {pipeline.map((d) => (
-                  <li key={d.id} className="py-3 flex items-center justify-between">
-                    <div>
-                      <div className="font-medium">{d.reference} — {d.owner_name}</div>
-                      <div className="text-xs text-muted-foreground">{d.city} · soumise le {d.submitted_date}</div>
-                    </div>
-                    <Link
-                      to="/demandes/$id"
-                      params={{ id: d.id }}
-                      className="text-sm text-primary hover:underline"
-                    >
-                      Ouvrir
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </CardContent>
-        </Card>
+        {role !== "agent" && (
+          <Card className="lg:col-span-2">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="text-base">Demandes à valider</CardTitle>
+              <Link to="/demandes" className="text-sm text-primary inline-flex items-center gap-1 hover:underline">
+                Voir tout <ArrowRight className="h-3 w-3" />
+              </Link>
+            </CardHeader>
+            <CardContent>
+              {pipeline.length === 0 ? (
+                <p className="text-sm text-muted-foreground py-6 text-center">Aucune demande en attente de validation.</p>
+              ) : (
+                <ul className="divide-y">
+                  {pipeline.map((d) => (
+                    <li key={d.id} className="py-3 flex items-center justify-between">
+                      <div>
+                        <div className="font-medium">{d.reference} — {d.owner_name}</div>
+                        <div className="text-xs text-muted-foreground">{d.city} · soumise le {d.submitted_date}</div>
+                      </div>
+                      <Link
+                        to="/demandes/$id"
+                        params={{ id: d.id }}
+                        className="text-sm text-primary hover:underline"
+                      >
+                        Ouvrir
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </CardContent>
+          </Card>
+        )}
 
         <Card>
           <CardHeader>

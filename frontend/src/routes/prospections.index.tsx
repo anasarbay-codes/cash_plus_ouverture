@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ProspectionBadge } from "@/components/StateBadge";
 import { useStore, leadSourceLabel, prospectionStateLabel, type ProspectionState } from "@/lib/ouvertures-store";
-import { Search } from "lucide-react";
+import { Search, Plus } from "lucide-react";
 
 export const Route = createFileRoute("/prospections/")({
   head: () => ({ meta: [{ title: "Prospection — Cash Plus" }] }),
@@ -81,6 +81,16 @@ function ProspectionsList() {
           </tbody>
         </table>
       </Card>
+
+      {role === "agent" && (
+        <div className="fixed bottom-8 right-8 z-50">
+          <Link to="/creation_prospection">
+            <Button size="icon" className="h-14 w-14 rounded-full shadow-lg bg-primary text-primary-foreground hover:bg-primary/90">
+              <Plus className="h-6 w-6" />
+            </Button>
+          </Link>
+        </div>
+      )}
     </AppLayout>
   );
 }

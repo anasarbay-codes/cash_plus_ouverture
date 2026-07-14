@@ -76,6 +76,7 @@ interface Store {
   updateDemande: (id: string, patch: Partial<Demande>) => void;
   validateDemande: (id: string) => string; // returns suivi id
   updateSuivi: (id: string, patch: Partial<Suivi>) => void;
+  addProspection: (prospection: Omit<Prospection, "id" | "state" | "created_at">) => void;
 }
 
 export const useStore = create<Store>((set, get) => ({
@@ -162,6 +163,18 @@ export const useStore = create<Store>((set, get) => ({
 
   updateSuivi: (id, patch) => set((s) => ({
     suivis: s.suivis.map((x) => (x.id === id ? { ...x, ...patch } : x)),
+  })),
+
+  addProspection: (p) => set((s) => ({
+    prospections: [
+      {
+        ...p,
+        id: `p${Date.now()}`,
+        state: "new",
+        created_at: new Date().toISOString().slice(0, 10),
+      },
+      ...s.prospections,
+    ],
   })),
 }));
 

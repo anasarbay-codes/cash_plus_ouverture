@@ -1,7 +1,7 @@
 import agency1 from "@/assets/agency-1.jpg";
 import agency2 from "@/assets/agency-2.jpg";
 import localEmpty from "@/assets/local-empty.jpg";
-import localFitout from "@/assets/local-fitout.jpg";
+import localFitout from "@/assets/local-fitout.png";
 import hero from "@/assets/hero-banner.jpg";
 
 export const heroBanner = hero;

@@ -1,8 +1,6 @@
 import { createStart, createMiddleware } from "@tanstack/react-start";
 
-import { renderErrorPage } from "./lib/error-page";
-
-const errorMiddleware = createMiddleware().server(async ({ next }: any) => {
+const errorMiddleware = createMiddleware().server(async ({ next }) => {
   try {
     return await next();
   } catch (error) {
@@ -10,7 +8,8 @@ const errorMiddleware = createMiddleware().server(async ({ next }: any) => {
       throw error;
     }
     console.error(error);
-    return new Response(renderErrorPage(), {
+    const html = `<!DOCTYPE html><html><head><title>Internal Server Error</title></head><body><h1>500 - Internal Server Error</h1><p>Something went wrong on our end.</p></body></html>`;
+    return new Response(html, {
       status: 500,
       headers: { "content-type": "text/html; charset=utf-8" },
     });
