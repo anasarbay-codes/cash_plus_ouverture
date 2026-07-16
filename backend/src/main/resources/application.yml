@@ -8,9 +8,9 @@ spring:
 
 
   datasource:
-    url: jdbc:mysql://localhost:3306/cash_plus_ouverture
-    username: root
-    password:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/cash_plus_ouverture}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
@@ -29,11 +29,11 @@ spring:
 
 app:
   jwt:
-    secret: Y2FzaHBsdXMtand0LXNlY3JldC1rZXktMjAyNi1zdXBlci1sb25nLXNlY3VyZQ== #READ THIS FROM SECRETS OR ENV VAR
-    expiration-ms: 86400000
+    secret: ${JWT_SECRET:Y2FzaHBsdXMtand0LXNlY3JldC1rZXktMjAyNi1zdXBlci1sb25nLXNlY3VyZQ==}
+    expiration-ms: ${JWT_EXPIRATION_MS:86400000}
 
   upload:
-    base-dir: ./uploads
+    base-dir: ${UPLOAD_BASE_DIR:./uploads}
     demandes-subdir: demandes
     suivis-subdir: suivis
 

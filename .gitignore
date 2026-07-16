@@ -199,3 +199,23 @@ sketch
 .ionide
 
 # End of https://www.toptal.com/developers/gitignore/api/java,visualstudiocode,node,react
+
+# ============================================================
+# Project-specific (ajouts)
+# ============================================================
+
+# Maven build artifacts
+backend/target/
+
+# Uploaded files (photos binaires)
+backend/uploads/
+uploads/
+
+# Local env overrides (secrets)
+.env
+.env.*
+!.env.example
+
+# OS / editor
+.DS_Store
+Thumbs.db
