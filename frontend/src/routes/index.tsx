@@ -1,24 +1,38 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { AppLayout } from "@/components/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useStore } from "@/lib/ouvertures-store";
+import { useStore, prospectionStateLabel, type ProspectionState } from "@/lib/ouvertures-store";
+import { useAuthStore } from "@/lib/auth-store";
+import { useProspections, useDemandes, useSuivis } from "@/lib/use-store";
 import { heroBanner } from "@/lib/photos";
-import { ArrowRight, Users, FileText, Rocket, CheckCircle2 } from "lucide-react";
+import { ArrowRight, Users, FileText, Rocket, CheckCircle2, Circle, ThumbsUp, XCircle, CheckCheck } from "lucide-react";
+
+const stateMeta: Record<ProspectionState, { icon: typeof Circle; color: string }> = {
+  NEW: { icon: Circle, color: "text-blue-600" },
+  INTERESTED: { icon: ThumbsUp, color: "text-amber-600" },
+  CONFIRMED: { icon: CheckCheck, color: "text-emerald-600" },
+  NOT_INTERESTED: { icon: XCircle, color: "text-muted-foreground" },
+};
 
 export const Route = createFileRoute("/")({
   component: Index,
 });
 
 function Index() {
-  const prospections = useStore((s) => s.prospections);
-  const demandes = useStore((s) => s.demandes);
-  const suivis = useStore((s) => s.suivis);
-  const role = useStore((s) => s.role);
-  const currentUser = useStore((s) => s.currentUser);
+  const prospections = useProspections();
+  const demandes = useDemandes();
+  const suivis = useSuivis();
+  const role = useAuthStore((s) => s.role);
+  const name = useAuthStore((s) => s.name);
 
-  const displayedProspections = role === "agent" && currentUser 
-    ? prospections.filter((p) => p.assigned_agent === currentUser) 
+  useEffect(() => {
+    useStore.loadAll();
+  }, []);
+
+  const displayedProspections = role === "AGENT" && name
+    ? prospections.filter((p) => p.assigned_agent_name === name)
     : prospections;
 
   const allStats = [
@@ -27,38 +41,38 @@ function Index() {
       label: "Prospection",
       icon: Users,
       total: displayedProspections.length,
-      hint: `${displayedProspections.filter((p) => p.state === "interested").length} intéressés`,
-      roles: ["agent", "validateur", "manager"],
+      hint: `${displayedProspections.filter((p) => p.state === "INTERESTED").length} intéressés`,
+      roles: ["AGENT", "VALIDATEUR", "MANAGER"],
     },
     {
       to: "/demandes",
       label: "Demandes d'ouverture",
       icon: FileText,
       total: demandes.length,
-      hint: `${demandes.filter((d) => d.state === "submitted").length} à valider`,
-      roles: ["validateur", "manager"],
+      hint: `${demandes.filter((d) => d.state === "SUBMITTED").length} à valider`,
+      roles: ["VALIDATEUR", "MANAGER"],
     },
     {
       to: "/suivis",
       label: "Suivi d'ouverture",
       icon: Rocket,
       total: suivis.length,
-      hint: `${suivis.filter((s) => s.state !== "live").length} en cours`,
-      roles: ["validateur", "manager"],
+      hint: `${suivis.filter((s) => s.state !== "LIVE").length} en cours`,
+      roles: ["VALIDATEUR", "MANAGER"],
     },
     {
       to: "/suivis",
       label: "Agences en service",
       icon: CheckCircle2,
-      total: suivis.filter((s) => s.state === "live").length,
+      total: suivis.filter((s) => s.state === "LIVE").length,
       hint: "démarrées",
-      roles: ["manager"],
+      roles: ["MANAGER"],
     },
   ];
 
-  const stats = allStats.filter((s) => s.roles.includes(role));
+  const stats = allStats.filter((s) => s.roles.includes(role ?? "MANAGER"));
 
-  const pipeline = demandes.filter((d) => d.state === "submitted").slice(0, 5);
+  const pipeline = demandes.filter((d) => d.state === "SUBMITTED").slice(0, 5);
 
   return (
     <AppLayout title="Tableau de bord" subtitle="Vue d'ensemble du cycle d'ouverture des agences Cash Plus">
@@ -96,8 +110,29 @@ function Index() {
         })}
       </div>
 
+      <div className="grid gap-3 grid-cols-2 sm:grid-cols-4 mb-8">
+        {(["NEW", "INTERESTED", "CONFIRMED", "NOT_INTERESTED"] as ProspectionState[]).map((st) => {
+          const count = displayedProspections.filter((p) => p.state === st).length;
+          const meta = stateMeta[st];
+          const Icon = meta.icon;
+          return (
+            <Link key={st} to="/prospections" className="group">
+              <Card className="hover:border-primary/40 transition-colors">
+                <CardContent className="p-4 flex items-center gap-3">
+                  <Icon className={`h-8 w-8 shrink-0 ${meta.color}`} />
+                  <div className="min-w-0">
+                    <div className="text-lg font-semibold tracking-tight">{count}</div>
+                    <div className="text-xs text-muted-foreground truncate">{prospectionStateLabel[st]}</div>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+          );
+        })}
+      </div>
+
       <div className="grid gap-6 lg:grid-cols-3">
-        {role !== "agent" && (
+        {role !== "AGENT" && (
           <Card className="lg:col-span-2">
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="text-base">Demandes à valider</CardTitle>
@@ -114,7 +149,7 @@ function Index() {
                     <li key={d.id} className="py-3 flex items-center justify-between">
                       <div>
                         <div className="font-medium">{d.reference} — {d.owner_name}</div>
-                        <div className="text-xs text-muted-foreground">{d.city} · soumise le {d.submitted_date}</div>
+                        <div className="text-xs text-muted-foreground">{d.city} · soumise le {d.submitted_date ?? "—"}</div>
                       </div>
                       <Link
                         to="/demandes/$id"

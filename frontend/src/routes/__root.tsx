@@ -3,12 +3,11 @@ import {
   Outlet,
   Link,
   createRootRouteWithContext,
-  useRouter,
   useRouterState,
   useNavigate,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
-import { useStore } from "@/lib/ouvertures-store";
+import { useAuthStore } from "@/lib/auth-store";
 
 import appCss from "../styles.css?url";
 import { Toaster } from "@/components/ui/sonner";
@@ -37,7 +36,6 @@ function NotFoundComponent() {
 
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
-  const router = useRouter();
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -50,10 +48,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
-            onClick={() => {
-              router.invalidate();
-              reset();
-            }}
+            onClick={reset}
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
             Try again
@@ -82,7 +77,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:description", content: "Suivi du cycle d'ouverture des agences Cash Plus." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       {
@@ -114,7 +108,8 @@ function RootComponent() {
 }
 
 function AuthGate() {
-  const authed = useStore((s) => s.authed);
+  const authed = useAuthStore((s) => s.authed);
+  const role = useAuthStore((s) => s.role);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
 
@@ -122,9 +117,12 @@ function AuthGate() {
     if (!authed && pathname !== "/login") {
       navigate({ to: "/login", replace: true });
     }
-  }, [authed, pathname, navigate]);
+    if (authed && role === "AGENT" && (pathname.startsWith("/demandes") || pathname.startsWith("/suivis"))) {
+      useAuthStore.getState().logout();
+      navigate({ to: "/login", replace: true });
+    }
+  }, [authed, role, pathname, navigate]);
 
   if (!authed && pathname !== "/login") return null;
-  // Required: nested routes render here.
   return <Outlet />;
 }

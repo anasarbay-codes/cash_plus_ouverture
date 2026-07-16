@@ -141,4 +141,8 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
   }
+
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
 }

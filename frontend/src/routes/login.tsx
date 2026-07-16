@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Building2, Lock, User, ArrowRight } from "lucide-react";
 import { useStore } from "@/lib/ouvertures-store";
+import { useAuthStore } from "@/lib/auth-store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,16 +20,14 @@ export const Route = createFileRoute("/login")({
 });
 
 const DEMO_ACCOUNTS = [
-  { email: "agent@cashplus.ma", password: "demo", name: "Karim B.", role: "agent" as const },
-  { email: "validateur@cashplus.ma", password: "demo", name: "Salma R.", role: "validateur" as const },
-  { email: "manager@cashplus.ma", password: "demo", name: "Youssef El Amrani", role: "manager" as const },
+  { email: "agent@cashplus.com", password: "password", name: "Admin Agent", role: "AGENT" as const },
+  { email: "validateur@cashplus.com", password: "password", name: "Admin Validateur", role: "VALIDATEUR" as const },
+  { email: "manager@cashplus.com", password: "password", name: "Admin Manager", role: "MANAGER" as const },
 ];
 
 function LoginPage() {
   const navigate = useNavigate();
-  const login = useStore((s) => s.login);
-  const setRole = useStore((s) => s.setRole);
-  const authed = useStore((s) => s.authed);
+  const authed = useAuthStore((s) => s.authed);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -38,21 +37,18 @@ function LoginPage() {
     if (authed) navigate({ to: "/" });
   }, [authed, navigate]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
-      const acc = DEMO_ACCOUNTS.find((a) => a.email === email.trim().toLowerCase() && a.password === password);
-      if (!acc) {
-        setLoading(false);
-        toast.error("Identifiants incorrects", { description: "Utilisez un compte de démonstration." });
-        return;
-      }
-      setRole(acc.role);
-      login(acc.name);
-      toast.success(`Bienvenue, ${acc.name}`);
+    try {
+      const data = await useStore.login(email.trim().toLowerCase(), password);
+      toast.success(`Bienvenue, ${data.name}`);
       navigate({ to: "/" });
-    }, 600);
+    } catch {
+      toast.error("Identifiants incorrects", { description: "Vérifiez votre email et mot de passe." });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const quickFill = (acc: (typeof DEMO_ACCOUNTS)[number]) => {
@@ -62,7 +58,6 @@ function LoginPage() {
 
   return (
     <div className="min-h-screen grid lg:grid-cols-2 bg-background">
-      {/* Visual side */}
       <div className="hidden lg:block relative overflow-hidden bg-sidebar">
         <img
           src={heroBanner}
@@ -94,7 +89,6 @@ function LoginPage() {
         </div>
       </div>
 
-      {/* Form side */}
       <div className="flex items-center justify-center p-6 md:p-12">
         <div className="w-full max-w-md">
           <div className="lg:hidden flex items-center gap-2 mb-8">
@@ -175,7 +169,7 @@ function LoginPage() {
               ))}
             </div>
             <div className="mt-2 text-[11px] text-muted-foreground">
-              Mot de passe : <code className="px-1 py-0.5 rounded bg-background">demo</code>
+              Mot de passe : <code className="px-1 py-0.5 rounded bg-background">password</code>
             </div>
           </div>
         </div>
