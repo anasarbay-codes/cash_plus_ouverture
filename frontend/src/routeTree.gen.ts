@@ -18,6 +18,9 @@ import { Route as DemandesIndexRouteImport } from './routes/demandes.index'
 import { Route as SuivisIdRouteImport } from './routes/suivis.$id'
 import { Route as ProspectionsIdRouteImport } from './routes/prospections.$id'
 import { Route as DemandesIdRouteImport } from './routes/demandes.$id'
+import { Route as Creation_userRouteImport } from './routes/creation_user'
+import { Route as UsersIndexRouteImport } from './routes/users.index'
+import { Route as UsersIdRouteImport } from './routes/users.$id'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -64,87 +67,123 @@ const DemandesIdRoute = DemandesIdRouteImport.update({
   path: '/demandes/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const Creation_userRoute = Creation_userRouteImport.update({
+  id: '/creation_user',
+  path: '/creation_user',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UsersIndexRoute = UsersIndexRouteImport.update({
+  id: '/users/',
+  path: '/users/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UsersIdRoute = UsersIdRouteImport.update({
+  id: '/users/$id',
+  path: '/users/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/creation_prospection': typeof Creation_prospectionRoute
+  '/creation_user': typeof Creation_userRoute
   '/login': typeof LoginRoute
+  '/users/$id': typeof UsersIdRoute
   '/demandes/$id': typeof DemandesIdRoute
   '/prospections/$id': typeof ProspectionsIdRoute
   '/suivis/$id': typeof SuivisIdRoute
   '/demandes/': typeof DemandesIndexRoute
   '/prospections/': typeof ProspectionsIndexRoute
   '/suivis/': typeof SuivisIndexRoute
+  '/users/': typeof UsersIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/creation_prospection': typeof Creation_prospectionRoute
+  '/creation_user': typeof Creation_userRoute
   '/login': typeof LoginRoute
+  '/users/$id': typeof UsersIdRoute
   '/demandes/$id': typeof DemandesIdRoute
   '/prospections/$id': typeof ProspectionsIdRoute
   '/suivis/$id': typeof SuivisIdRoute
   '/demandes': typeof DemandesIndexRoute
   '/prospections': typeof ProspectionsIndexRoute
   '/suivis': typeof SuivisIndexRoute
+  '/users': typeof UsersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/creation_prospection': typeof Creation_prospectionRoute
+  '/creation_user': typeof Creation_userRoute
   '/login': typeof LoginRoute
+  '/users/$id': typeof UsersIdRoute
   '/demandes/$id': typeof DemandesIdRoute
   '/prospections/$id': typeof ProspectionsIdRoute
   '/suivis/$id': typeof SuivisIdRoute
   '/demandes/': typeof DemandesIndexRoute
   '/prospections/': typeof ProspectionsIndexRoute
   '/suivis/': typeof SuivisIndexRoute
+  '/users/': typeof UsersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/creation_prospection'
+    | '/creation_user'
     | '/login'
+    | '/users/$id'
     | '/demandes/$id'
     | '/prospections/$id'
     | '/suivis/$id'
     | '/demandes/'
     | '/prospections/'
     | '/suivis/'
+    | '/users/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/creation_prospection'
+    | '/creation_user'
     | '/login'
+    | '/users/$id'
     | '/demandes/$id'
     | '/prospections/$id'
     | '/suivis/$id'
     | '/demandes'
     | '/prospections'
     | '/suivis'
+    | '/users'
   id:
     | '__root__'
     | '/'
     | '/creation_prospection'
+    | '/creation_user'
     | '/login'
+    | '/users/$id'
     | '/demandes/$id'
     | '/prospections/$id'
     | '/suivis/$id'
     | '/demandes/'
     | '/prospections/'
     | '/suivis/'
+    | '/users/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   Creation_prospectionRoute: typeof Creation_prospectionRoute
+  Creation_userRoute: typeof Creation_userRoute
   LoginRoute: typeof LoginRoute
+  UsersIdRoute: typeof UsersIdRoute
   DemandesIdRoute: typeof DemandesIdRoute
   ProspectionsIdRoute: typeof ProspectionsIdRoute
   SuivisIdRoute: typeof SuivisIdRoute
   DemandesIndexRoute: typeof DemandesIndexRoute
   ProspectionsIndexRoute: typeof ProspectionsIndexRoute
   SuivisIndexRoute: typeof SuivisIndexRoute
+  UsersIndexRoute: typeof UsersIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -161,6 +200,13 @@ declare module '@tanstack/react-router' {
       path: '/creation_prospection'
       fullPath: '/creation_prospection'
       preLoaderRoute: typeof Creation_prospectionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/creation_user': {
+      id: '/creation_user'
+      path: '/creation_user'
+      fullPath: '/creation_user'
+      preLoaderRoute: typeof Creation_userRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -191,6 +237,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DemandesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/users/': {
+      id: '/users/'
+      path: '/users'
+      fullPath: '/users/'
+      preLoaderRoute: typeof UsersIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/suivis/$id': {
       id: '/suivis/$id'
       path: '/suivis/$id'
@@ -212,19 +265,29 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DemandesIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/users/$id': {
+      id: '/users/$id'
+      path: '/users/$id'
+      fullPath: '/users/$id'
+      preLoaderRoute: typeof UsersIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   Creation_prospectionRoute: Creation_prospectionRoute,
+  Creation_userRoute: Creation_userRoute,
   LoginRoute: LoginRoute,
+  UsersIdRoute: UsersIdRoute,
   DemandesIdRoute: DemandesIdRoute,
   ProspectionsIdRoute: ProspectionsIdRoute,
   SuivisIdRoute: SuivisIdRoute,
   DemandesIndexRoute: DemandesIndexRoute,
   ProspectionsIndexRoute: ProspectionsIndexRoute,
   SuivisIndexRoute: SuivisIndexRoute,
+  UsersIndexRoute: UsersIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -72,6 +72,13 @@ export interface Suivi {
   photo_count: number;
 }
 
+export interface User {
+  id: number;
+  name: string;
+  email: string;
+  role: Role;
+}
+
 export interface PageResponse<T> {
   content: T[];
   page: number;
@@ -83,6 +90,7 @@ export interface PageResponse<T> {
 let _prospections: Prospection[] = [];
 let _demandes: Demande[] = [];
 let _suivis: Suivi[] = [];
+let _users: User[] = [];
 let _listeners: Array<() => void> = [];
 
 function notify() {
@@ -97,7 +105,7 @@ function subscribe(l: () => void) {
 }
 
 function getSnapshot() {
-  return { prospections: _prospections, demandes: _demandes, suivis: _suivis };
+  return { prospections: _prospections, demandes: _demandes, suivis: _suivis, users: _users };
 }
 
 function emitChange() {
@@ -287,6 +295,24 @@ export const useStore = {
     form.append("file", file);
     await api.postForm(`/suivis/${suiviId}/photos`, form);
     await useStore.loadSuivis();
+  },
+
+  loadUsers: async () => {
+    const { data } = await api.get<User[]>("/admin/users");
+    _users = data;
+    emitChange();
+  },
+
+  createUser: async (body: { name: string; email: string; password: string; role?: Role }) => {
+    const { data } = await api.post("/admin/users", body);
+    await useStore.loadUsers();
+    return data;
+  },
+
+  updateUser: async (id: number, body: { name?: string; email?: string; password?: string; role?: Role }) => {
+    const { data } = await api.put(`/admin/users/${id}`, body);
+    await useStore.loadUsers();
+    return data;
   },
 };
 

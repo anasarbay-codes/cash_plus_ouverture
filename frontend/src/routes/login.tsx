@@ -19,12 +19,6 @@ export const Route = createFileRoute("/login")({
   component: LoginPage,
 });
 
-const DEMO_ACCOUNTS = [
-  { email: "agent@cashplus.com", password: "password", name: "Admin Agent", role: "AGENT" as const },
-  { email: "validateur@cashplus.com", password: "password", name: "Admin Validateur", role: "VALIDATEUR" as const },
-  { email: "manager@cashplus.com", password: "password", name: "Admin Manager", role: "MANAGER" as const },
-];
-
 function LoginPage() {
   const navigate = useNavigate();
   const authed = useAuthStore((s) => s.authed);
@@ -49,11 +43,6 @@ function LoginPage() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const quickFill = (acc: (typeof DEMO_ACCOUNTS)[number]) => {
-    setEmail(acc.email);
-    setPassword(acc.password);
   };
 
   return (
@@ -153,25 +142,6 @@ function LoginPage() {
             </Button>
           </form>
 
-          <div className="mt-8 rounded-lg border bg-muted/40 p-4">
-            <div className="text-xs font-medium text-foreground mb-2">Comptes de démonstration</div>
-            <div className="space-y-1.5">
-              {DEMO_ACCOUNTS.map((acc) => (
-                <button
-                  key={acc.email}
-                  type="button"
-                  onClick={() => quickFill(acc)}
-                  className="w-full flex items-center justify-between text-left text-xs px-2 py-1.5 rounded hover:bg-background transition-colors"
-                >
-                  <span className="text-muted-foreground">{acc.email}</span>
-                  <span className="text-foreground font-medium capitalize">{acc.role}</span>
-                </button>
-              ))}
-            </div>
-            <div className="mt-2 text-[11px] text-muted-foreground">
-              Mot de passe : <code className="px-1 py-0.5 rounded bg-background">password</code>
-            </div>
-          </div>
         </div>
       </div>
     </div>

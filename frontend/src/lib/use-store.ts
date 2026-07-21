@@ -24,3 +24,11 @@ export function useSuivis() {
     useCallback(() => useStore.getState().suivis, [])
   );
 }
+
+export function useUsers() {
+  return useSyncExternalStore(
+    useStore.subscribe,
+    useCallback(() => useStore.getState().users, []),
+    useCallback(() => useStore.getState().users, [])
+  );
+}

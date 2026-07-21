@@ -11,6 +11,7 @@ const allNav: NavItem[] = [
   { to: "/prospections", label: "Prospection", icon: Users },
   { to: "/demandes", label: "Demandes d'ouverture", icon: FileText },
   { to: "/suivis", label: "Suivi d'ouverture", icon: Rocket },
+  { to: "/users", label: "Utilisateurs", icon: Users },
 ];
 
 const agentNav: NavItem[] = allNav.filter((n) => n.to === "/" || n.to === "/prospections");
@@ -21,7 +22,11 @@ export function AppLayout({ children, title, subtitle }: { children: ReactNode; 
   const name = useAuthStore((s) => s.name);
   const logout = useAuthStore((s) => s.logout);
   const navigate = useNavigate();
-  const nav = useMemo(() => role === "AGENT" ? agentNav : allNav, [role]);
+  const nav = useMemo(() => {
+    if (role === "AGENT") return agentNav;
+    if (role === "VALIDATEUR") return allNav.filter((n) => n.to !== "/users");
+    return allNav;
+  }, [role]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const NavLinks = ({ className, mobile }: { className?: string; mobile?: boolean }) => (
